@@ -1,4 +1,7 @@
 from django.db import models
 
-# Add your models here
+# Import models from the models package
+from .models import Category, Product
+
+__all__ = ['Category', 'Product']
 

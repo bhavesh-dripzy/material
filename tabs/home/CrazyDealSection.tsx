@@ -1,9 +1,9 @@
 import React from 'react';
 
 const PromoCard = ({ title, image, showBingo }: { title: string; image: string; showBingo?: boolean }) => (
-  <div className="bg-white border-[2.5px] border-[#1e3a8a] rounded-2xl p-2 flex flex-col items-center justify-start aspect-[2/3] relative overflow-hidden group active:scale-95 transition-transform shadow-md">
+  <div className="bg-[#e0f2fe] border-[2.5px] border-[#1e3a8a] rounded-2xl p-1.5 flex flex-col items-center justify-start aspect-[2/2.5] relative overflow-hidden group active:scale-95 transition-transform shadow-md">
     {/* Title at the top */}
-    <h3 className="text-[9px] font-black text-gray-900 text-center leading-tight uppercase tracking-tighter z-10 mb-2 h-5 flex items-center justify-center">
+    <h3 className="text-[9px] font-black text-gray-900 text-center leading-tight uppercase tracking-tighter z-10 mb-0.5 h-4 flex items-center justify-center">
       {title}
     </h3>
     
@@ -12,7 +12,7 @@ const PromoCard = ({ title, image, showBingo }: { title: string; image: string; 
       <img 
         src={image} 
         alt={title} 
-        className="max-h-[85%] w-full object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.05)]" 
+        className="max-h-[90%] w-full object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.05)]" 
       />
       
       {/* Specific Bingo sticker placement for Safety Gear as per screenshot */}
@@ -27,7 +27,9 @@ const PromoCard = ({ title, image, showBingo }: { title: string; image: string; 
 
 const CrazyDealSection: React.FC = () => {
   return (
-    <div className="bg-[#e0f2fe]/60 -mx-3 px-3 pt-6 pb-8 mb-6 relative overflow-hidden border-b border-blue-100">
+    <div className="bg-[#e0f2fe]/60 -mx-3 px-3 pt-6 pb-8 relative overflow-hidden">
+      {/* Gradient transition at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-b from-transparent via-[#e0f2fe]/60 to-[#fdf0e1] pointer-events-none"></div>
       {/* Background patterns */}
       <div className="absolute top-0 right-0 opacity-10 pointer-events-none scale-150 translate-x-10 -translate-y-10">
         <svg width="200" height="200" viewBox="0 0 24 24" fill="#3b82f6"><circle cx="12" cy="12" r="8"/></svg>
@@ -61,37 +63,36 @@ const CrazyDealSection: React.FC = () => {
         {/* Grid of Items */}
         <div className="grid grid-cols-4 gap-2 px-0.5 relative z-10">
           <PromoCard 
-            title="HOUSE PAINTS" 
-            image="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=200&auto=format&fit=crop" 
+            title="CEMENT" 
+            image="https://home-run.co/cdn/shop/files/menu-thumbnail-673c6c54b681b_220x.png?v=8603408078813919799" 
           />
           <PromoCard 
-            title="DRILL SETS" 
-            image="https://images.unsplash.com/photo-1581244277943-fe4a9c777189?q=80&w=200&auto=format&fit=crop" 
+            title="TILING" 
+            image="https://home-run.co/cdn/shop/files/menu-thumbnail-673c6c767b0e6_220x.png?v=1878446217165575219" 
           />
           <PromoCard 
-            title="ELECTRICALS" 
-            image="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=200&auto=format&fit=crop" 
+            title="PAINTING" 
+            image="https://home-run.co/cdn/shop/files/menu-thumbnail-673c6c94c9e22_220x.png?v=15262556008640012853" 
           />
           <PromoCard 
-            title="HARDWARES" 
-            image="https://images.unsplash.com/photo-1510816159960-63fb58b4ddbb?q=80&w=200&auto=format&fit=crop" 
+            title="WATER PROOFING" 
+            image="https://home-run.co/cdn/shop/files/menu-thumbnail-673c6cc1725a2_220x.png?v=10627397218498432130" 
           />
           <PromoCard 
-            title="PLUMBING" 
-            image="https://images.unsplash.com/photo-1558402529-d26c897104b9?q=80&w=200&auto=format&fit=crop" 
+            title="PLYWOOD, MDF & HDHMR" 
+            image="https://home-run.co/cdn/shop/files/menu-thumbnail-673c6ce4bd6f3_220x.png?v=2352968367495658769" 
           />
           <PromoCard 
-            title="GARDEN TOOLS" 
-            image="https://images.unsplash.com/photo-1558402529-d26c897104b9?q=80&w=200&auto=format&fit=crop" 
+            title="FEVICOL" 
+            image="https://home-run.co/cdn/shop/files/menu-thumbnail-673c6d0aabe91_220x.png?v=5298422970260033513" 
           />
           <PromoCard 
-            title="LOCKS & KEYS" 
-            image="https://images.unsplash.com/photo-1510816159960-63fb58b4ddbb?q=80&w=200&auto=format&fit=crop" 
+            title="WIRES" 
+            image="https://home-run.co/cdn/shop/files/menu-thumbnail-6854f1de6fca1_220x.png?v=11953741062494896029" 
           />
           <PromoCard 
-            title="SAFETY GEAR" 
-            image="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=200&auto=format&fit=crop" 
-            showBingo
+            title="SWITCHES & SOCKETS" 
+            image="https://home-run.co/cdn/shop/files/menu-thumbnail-6854f23501b3c_220x.png?v=11709596588054296729" 
           />
         </div>
       </div>

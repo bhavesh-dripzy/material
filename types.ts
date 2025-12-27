@@ -34,5 +34,6 @@ export enum AppTab {
   CATEGORIES = 'categories',
   SEARCH = 'search',
   CART = 'cart',
-  ORDERS = 'orders'
+  ORDERS = 'orders',
+  PRODUCTS = 'products'
 }

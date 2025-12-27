@@ -4,6 +4,7 @@ import { Product } from '../../types';
 interface PriceDropSectionProps {
   products: Product[];
   onAdd: (product: Product) => void;
+  onViewAll?: () => void;
 }
 
 const PriceDropCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product) => void }) => {
@@ -71,9 +72,11 @@ const PriceDropCard = ({ product, onAdd }: { product: Product; onAdd: (p: Produc
   );
 };
 
-const PriceDropSection: React.FC<PriceDropSectionProps> = ({ products, onAdd }) => {
+const PriceDropSection: React.FC<PriceDropSectionProps> = ({ products, onAdd, onViewAll }) => {
   return (
-    <div className="relative bg-[#fdf0e1] -mx-3 px-3 pt-6 pb-6 mb-6 overflow-hidden">
+    <div className="relative bg-[#fdf0e1] -mx-3 px-3 pt-0 pb-6 mb-6 overflow-hidden">
+      {/* Gradient transition at top */}
+      <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-[#e0f2fe]/60 via-[#f0e8d8] to-[#fdf0e1] pointer-events-none"></div>
       {/* Background Pattern and Lightning Bolt */}
       <div className="absolute top-0 right-0 opacity-10 pointer-events-none">
         <svg width="100" height="100" viewBox="0 0 24 24" fill="#3f200d"><circle cx="12" cy="12" r="8"/></svg>
@@ -82,7 +85,7 @@ const PriceDropSection: React.FC<PriceDropSectionProps> = ({ products, onAdd }) 
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
       </div>
 
-      <div className="relative z-10">
+      <div className="relative z-10 pt-6">
         <h2 className="text-[26px] font-[1000] text-[#3f200d] leading-none mb-0.5 tracking-tighter uppercase">Price drop!</h2>
         <p className="text-[12px] font-bold text-[#3f200d] opacity-70 mb-6 uppercase tracking-tight">Great deals on paints, tools & more</p>
         
@@ -105,7 +108,7 @@ const PriceDropSection: React.FC<PriceDropSectionProps> = ({ products, onAdd }) 
                <img src="https://images.unsplash.com/photo-1581244277943-fe4a9c777189?q=80&w=100&auto=format&fit=crop" className="w-full h-full object-cover" />
              </div>
            </div>
-           <button className="flex items-center gap-1">
+           <button onClick={onViewAll} className="flex items-center gap-1">
              <span className="text-[11px] font-[1000] text-blue-900 uppercase tracking-tighter">See all products</span>
              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a" strokeWidth="4"><path d="m9 18 6-6-6-6"/></svg>
            </button>

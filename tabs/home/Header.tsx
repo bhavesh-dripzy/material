@@ -46,7 +46,7 @@ const Header: React.FC<HeaderProps> = ({ address, searchQuery, onSearchChange, o
         <input 
           type="text" 
           placeholder='Search "cement", "pipes" or "paints"'
-          className="w-full bg-white/95 backdrop-blur-sm border border-gray-100 rounded-xl py-2 pl-11 pr-11 text-[14px] font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-100 placeholder-gray-400 transition-all text-gray-900"
+          className="w-full bg-white/95 backdrop-blur-sm border border-gray-800 rounded-xl py-2 pl-11 pr-11 text-[14px] font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-100 placeholder-gray-400 transition-all text-gray-900"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           onClick={onSearchClick}

@@ -80,18 +80,30 @@ Create a `.env` file in the `backend` directory with the following variables:
 - `SECRET_KEY`: Django secret key (generate a new one for production)
 - `DEBUG`: Set to `False` in production
 - `ALLOWED_HOSTS`: Comma-separated list of allowed hosts
-- `DB_ENGINE`: Database engine (default: SQLite)
+- `DB_ENGINE`: Database engine (default: MySQL)
 - `DB_NAME`: Database name
+- `DB_USER`: Database user
+- `DB_PASSWORD`: Database password
+- `DB_HOST`: Database host (default: localhost)
+- `DB_PORT`: Database port (default: 3306)
 - `CORS_ALLOWED_ORIGINS`: Comma-separated list of allowed CORS origins
 
 ### Database Setup
 
-By default, the project uses SQLite. To use PostgreSQL or MySQL:
+The project uses MySQL. Make sure MySQL is installed and running:
 
-1. Update the database settings in `.env`
-2. Install the appropriate database adapter:
-   - PostgreSQL: `pip install psycopg2-binary`
-   - MySQL: `pip install mysqlclient`
+1. Create the database:
+   ```bash
+   mysql -u root -p
+   CREATE DATABASE buildquick_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
+
+2. Update the database settings in `.env` with your MySQL credentials
+
+3. Install MySQL client:
+   ```bash
+   pip install mysqlclient
+   ```
 
 ## 📡 API Endpoints
 
