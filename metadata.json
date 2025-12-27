@@ -1,0 +1,7 @@
+{
+  "name": "BuildQuick - Construction Materials Delivered in 60 Mins",
+  "description": "Delhi NCR's fastest delivery app for cement, hardware, electrical, plumbing, and other construction/interior materials. Low prices and express 60-minute delivery.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
