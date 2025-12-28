@@ -18,6 +18,10 @@ import PriceDropSection from './tabs/home/PriceDropSection';
 import CategoriesHeader from './tabs/categories/Header';
 import BrowseCategoriesSection from './tabs/categories/BrowseCategoriesSection';
 
+// Products Tab Components
+import ProductListingHeader from './tabs/products/Header';
+import ProductListingPage from './tabs/products/ProductListingPage';
+
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AppTab>(AppTab.HOME);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -66,6 +70,13 @@ const App: React.FC = () => {
           }}
           onSearchClick={() => setActiveTab(AppTab.SEARCH)}
         />
+      ) : activeTab === AppTab.PRODUCTS ? (
+        <ProductListingHeader 
+          title="Blockbuster Deals"
+          onBack={() => setActiveTab(AppTab.HOME)}
+          onSearchClick={() => setActiveTab(AppTab.SEARCH)}
+          onFavoriteClick={() => {}}
+        />
       ) : (
         <HomeHeader 
           address={address} 
@@ -80,9 +91,9 @@ const App: React.FC = () => {
 
       <main className="flex-grow overflow-y-auto hide-scrollbar bg-white">
         {activeTab === AppTab.HOME && (
-          <div className="pb-32 px-3 pt-2">
+          <div className="pb-32 px-3">
             <CrazyDealSection />
-            <PriceDropSection products={PRICE_DROP_PRODUCTS} onAdd={addToCart} />
+            <PriceDropSection products={PRICE_DROP_PRODUCTS} onAdd={addToCart} onViewAll={() => setActiveTab(AppTab.PRODUCTS)} />
             <FrequentlyBoughtSection products={PRODUCTS} onAdd={addToCart} />
           </div>
         )}
@@ -127,6 +138,14 @@ const App: React.FC = () => {
                )}
              </div>
           </div>
+        )}
+
+        {activeTab === AppTab.PRODUCTS && (
+          <ProductListingPage 
+            products={[...PRICE_DROP_PRODUCTS, ...PRODUCTS]} 
+            onAdd={addToCart}
+            title="Blockbuster Deals"
+          />
         )}
 
         {activeTab === AppTab.CART && (
