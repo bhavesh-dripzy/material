@@ -28,8 +28,8 @@ const PromoCard = ({ title, image, showBingo }: { title: string; image: string; 
 const CrazyDealSection: React.FC = () => {
   return (
     <div className="bg-[#e0f2fe]/60 -mx-3 px-3 pt-6 pb-8 relative overflow-hidden">
-      {/* Gradient transition at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-b from-transparent via-[#e0f2fe]/60 to-[#fdf0e1] pointer-events-none"></div>
+      {/* Gradient transition at bottom - blue to pink */}
+      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-b from-transparent via-[#e0f2fe]/60 via-[#d4c4e8]/40 to-[#fdf0e1] pointer-events-none"></div>
       {/* Background patterns */}
       <div className="absolute top-0 right-0 opacity-10 pointer-events-none scale-150 translate-x-10 -translate-y-10">
         <svg width="200" height="200" viewBox="0 0 24 24" fill="#3b82f6"><circle cx="12" cy="12" r="8"/></svg>
