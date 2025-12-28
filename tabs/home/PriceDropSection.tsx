@@ -75,8 +75,6 @@ const PriceDropCard = ({ product, onAdd }: { product: Product; onAdd: (p: Produc
 const PriceDropSection: React.FC<PriceDropSectionProps> = ({ products, onAdd, onViewAll }) => {
   return (
     <div className="relative bg-[#fdf0e1] -mx-3 px-3 pt-0 pb-6 mb-6 overflow-hidden">
-      {/* Gradient transition at top */}
-      <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-[#e0f2fe]/60 via-[#f0e8d8] to-[#fdf0e1] pointer-events-none"></div>
       {/* Background Pattern and Lightning Bolt */}
       <div className="absolute top-0 right-0 opacity-10 pointer-events-none">
         <svg width="100" height="100" viewBox="0 0 24 24" fill="#3f200d"><circle cx="12" cy="12" r="8"/></svg>
@@ -86,7 +84,7 @@ const PriceDropSection: React.FC<PriceDropSectionProps> = ({ products, onAdd, on
       </div>
 
       <div className="relative z-10 pt-6">
-        <h2 className="text-[26px] font-[1000] text-[#3f200d] leading-none mb-0.5 tracking-tighter uppercase">Price drop!</h2>
+        <h2 className="text-[26px] font-[1000] text-[#3f200d] leading-none mb-0.5 tracking-tighter uppercase">Deals of the day</h2>
         <p className="text-[12px] font-bold text-[#3f200d] opacity-70 mb-6 uppercase tracking-tight">Great deals on paints, tools & more</p>
         
         <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-4 px-0.5">
