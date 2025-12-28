@@ -4,10 +4,22 @@ import { Product } from '../../types';
 interface PriceDropSectionProps {
   products: Product[];
   onAdd: (product: Product) => void;
+  onRemove?: (productId: string) => void;
+  cartItems?: Array<{ id: string; quantity: number }>;
   onViewAll?: () => void;
 }
 
-const PriceDropCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product) => void }) => {
+const PriceDropCard = ({ 
+  product, 
+  onAdd, 
+  onRemove,
+  cartQuantity = 0 
+}: { 
+  product: Product; 
+  onAdd: (p: Product) => void;
+  onRemove?: (productId: string) => void;
+  cartQuantity?: number;
+}) => {
   return (
     <div className="w-[130px] shrink-0 flex flex-col group">
       {/* Image Container */}
@@ -19,13 +31,40 @@ const PriceDropCard = ({ product, onAdd }: { product: Product; onAdd: (p: Produc
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-gray-400"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
         </button>
 
-        {/* Add Button Overlay */}
-        <button 
-          onClick={() => onAdd(product)}
-          className="absolute -bottom-2 right-1.5 bg-white border border-green-600 shadow-lg px-3 py-1 rounded-lg text-green-700 font-black text-[10px] hover:bg-green-50 active:scale-95 transition-all z-10"
-        >
-          ADD
-        </button>
+        {/* Add/Quantity Button Overlay */}
+        {cartQuantity > 0 ? (
+          <div className="absolute -bottom-2 right-1.5 bg-white border border-green-600 shadow-lg rounded-lg flex items-center gap-1.5 px-2 py-1 z-10">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onRemove) onRemove(product.id);
+              }}
+              className="w-5 h-5 bg-red-50 text-red-600 rounded-full flex items-center justify-center font-black text-[10px] hover:bg-red-100 active:scale-95 transition-all"
+            >
+              −
+            </button>
+            <span className="text-green-700 font-black text-[11px] min-w-[20px] text-center">{cartQuantity}</span>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdd(product);
+              }}
+              className="w-5 h-5 bg-green-50 text-green-600 rounded-full flex items-center justify-center font-black text-[10px] hover:bg-green-100 active:scale-95 transition-all"
+            >
+              +
+            </button>
+          </div>
+        ) : (
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onAdd(product);
+            }}
+            className="absolute -bottom-2 right-1.5 bg-white border border-green-600 shadow-lg px-3 py-1 rounded-lg text-green-700 font-black text-[10px] hover:bg-green-50 active:scale-95 transition-all z-10"
+          >
+            ADD
+          </button>
+        )}
       </div>
 
       {/* Product Details */}
@@ -63,16 +102,11 @@ const PriceDropCard = ({ product, onAdd }: { product: Product; onAdd: (p: Produc
         </div>
       </div>
 
-      {/* Footer link */}
-      <button className="flex items-center justify-between w-full bg-[#fdf2e9] border border-[#f5e1ce] rounded-lg px-2 py-1 mt-auto">
-        <span className="text-[8px] font-bold text-[#3f200d]">See more like this</span>
-        <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="#3f200d" strokeWidth="4"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
     </div>
   );
 };
 
-const PriceDropSection: React.FC<PriceDropSectionProps> = ({ products, onAdd, onViewAll }) => {
+const PriceDropSection: React.FC<PriceDropSectionProps> = ({ products, onAdd, onRemove, cartItems = [], onViewAll }) => {
   return (
     <div className="relative bg-[#fdf0e1] -mx-3 px-3 pt-0 pb-6 mb-6 overflow-hidden">
       {/* Background Pattern and Lightning Bolt */}
@@ -88,9 +122,19 @@ const PriceDropSection: React.FC<PriceDropSectionProps> = ({ products, onAdd, on
         <p className="text-[12px] font-bold text-[#3f200d] opacity-70 mb-6 uppercase tracking-tight">Great deals on paints, tools & more</p>
         
         <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-4 px-0.5">
-          {products.map(product => (
-            <PriceDropCard key={product.id} product={product} onAdd={onAdd} />
-          ))}
+          {products.map(product => {
+            const cartItem = cartItems.find(item => item.id === product.id);
+            const quantity = cartItem?.quantity || 0;
+            return (
+              <PriceDropCard 
+                key={product.id} 
+                product={product} 
+                onAdd={onAdd}
+                onRemove={onRemove}
+                cartQuantity={quantity}
+              />
+            );
+          })}
         </div>
 
         {/* Bottom Bar */}

@@ -1,13 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Product } from '../../types';
+import { apiService, ApiProduct } from '../../services/api';
+import { mapApiProductsToProducts } from '../../utils/productMapper';
 
 interface ProductListingPageProps {
-  products: Product[];
+  products?: Product[];
   onAdd: (product: Product) => void;
+  onRemove?: (productId: string) => void;
+  cartItems?: Array<{ id: string; quantity: number }>;
   title?: string;
+  categoryId?: number;
 }
 
-const ProductListingCard = ({ product, onAdd }: { product: Product; onAdd: (p: Product) => void }) => {
+const ProductListingCard = ({ 
+  product, 
+  onAdd, 
+  onRemove,
+  cartQuantity = 0 
+}: { 
+  product: Product; 
+  onAdd: (p: Product) => void;
+  onRemove?: (productId: string) => void;
+  cartQuantity?: number;
+}) => {
   return (
     <div className="flex flex-col group">
       {/* Image Container */}
@@ -19,13 +34,40 @@ const ProductListingCard = ({ product, onAdd }: { product: Product; onAdd: (p: P
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-gray-400"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
         </button>
 
-        {/* Add Button Overlay */}
-        <button 
-          onClick={() => onAdd(product)}
-          className="absolute -bottom-2 right-1.5 bg-white border border-green-600 shadow-lg px-3 py-1 rounded-lg text-green-700 font-black text-[10px] hover:bg-green-50 active:scale-95 transition-all z-10"
-        >
-          ADD
-        </button>
+        {/* Add/Quantity Button Overlay */}
+        {cartQuantity > 0 ? (
+          <div className="absolute -bottom-2 right-1.5 bg-white border border-green-600 shadow-lg rounded-lg flex items-center gap-1.5 px-2 py-1 z-10">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onRemove) onRemove(product.id);
+              }}
+              className="w-5 h-5 bg-red-50 text-red-600 rounded-full flex items-center justify-center font-black text-[10px] hover:bg-red-100 active:scale-95 transition-all"
+            >
+              −
+            </button>
+            <span className="text-green-700 font-black text-[11px] min-w-[20px] text-center">{cartQuantity}</span>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdd(product);
+              }}
+              className="w-5 h-5 bg-green-50 text-green-600 rounded-full flex items-center justify-center font-black text-[10px] hover:bg-green-100 active:scale-95 transition-all"
+            >
+              +
+            </button>
+          </div>
+        ) : (
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onAdd(product);
+            }}
+            className="absolute -bottom-2 right-1.5 bg-white border border-green-600 shadow-lg px-3 py-1 rounded-lg text-green-700 font-black text-[10px] hover:bg-green-50 active:scale-95 transition-all z-10"
+          >
+            ADD
+          </button>
+        )}
       </div>
 
       {/* Product Details */}
@@ -33,7 +75,7 @@ const ProductListingCard = ({ product, onAdd }: { product: Product; onAdd: (p: P
         <div className="w-2.5 h-2.5 border border-green-600 flex items-center justify-center p-0.5 rounded-[2px]">
           <div className="w-full h-full bg-green-600 rounded-full"></div>
         </div>
-        <span className="text-[8px] font-bold text-gray-500 bg-gray-100 px-1 rounded">{product.unit}</span>
+        <span className="text-[8px] font-bold text-gray-500 bg-gray-100 px-1 rounded">{product.unit || 'Unit'}</span>
       </div>
 
       <h4 className="text-[10px] font-bold text-[#3f200d] leading-tight line-clamp-2 h-6 mb-0.5 uppercase tracking-tighter">{product.name}</h4>
@@ -73,16 +115,60 @@ const ProductListingCard = ({ product, onAdd }: { product: Product; onAdd: (p: P
         </div>
       </div>
 
-      {/* Footer link */}
-      <button className="flex items-center justify-between w-full bg-[#fdf2e9] border border-[#f5e1ce] rounded-lg px-2 py-1 mt-auto">
-        <span className="text-[8px] font-bold text-[#3f200d]">See more like this</span>
-        <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="#3f200d" strokeWidth="4"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
     </div>
   );
 };
 
-const ProductListingPage: React.FC<ProductListingPageProps> = ({ products, onAdd, title = "All Products" }) => {
+const ProductListingPage: React.FC<ProductListingPageProps> = ({ 
+  products: staticProducts, 
+  onAdd,
+  onRemove,
+  cartItems = [],
+  title = "All Products",
+  categoryId 
+}) => {
+  const [products, setProducts] = useState<Product[]>(staticProducts || []);
+  const [loading, setLoading] = useState(!staticProducts);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+
+  useEffect(() => {
+    if (staticProducts) {
+      setProducts(staticProducts);
+      return;
+    }
+
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await apiService.getProducts(categoryId, page, 20);
+        if (response.success && response.results) {
+          const mappedProducts = mapApiProductsToProducts(response.results);
+          if (page === 1) {
+            setProducts(mappedProducts);
+          } else {
+            setProducts(prev => [...prev, ...mappedProducts]);
+          }
+          setHasMore(response.has_next || false);
+        }
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [categoryId, page, staticProducts]);
+
+  if (loading && products.length === 0) {
+    return (
+      <div className="pb-32">
+        <div className="text-center py-12 text-gray-400 text-sm font-bold">Loading products...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="pb-32">
       {/* Filter Bar */}
@@ -112,36 +198,43 @@ const ProductListingPage: React.FC<ProductListingPageProps> = ({ products, onAdd
           Brand
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="m6 9 6 6 6-6"/></svg>
         </button>
-        
-        <button className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 rounded-lg border border-blue-200 shrink-0 text-[11px] font-bold text-blue-700">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="text-blue-600">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-          </svg>
-          Paints
-        </button>
-        
-        <button className="flex items-center gap-1 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200 shrink-0 text-[11px] font-bold text-gray-700">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="text-gray-600">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-          </svg>
-          Hardware
-        </button>
       </div>
       
       {/* Product Grid */}
       <div className="px-3 py-4">
         <div className="grid grid-cols-2 gap-3">
-          {products.map(product => (
-            <ProductListingCard key={product.id} product={product} onAdd={onAdd} />
-          ))}
-          {products.length === 0 && (
+          {products.map(product => {
+            const cartItem = cartItems.find(item => item.id === product.id);
+            const quantity = cartItem?.quantity || 0;
+            return (
+              <ProductListingCard 
+                key={product.id} 
+                product={product} 
+                onAdd={onAdd}
+                onRemove={onRemove}
+                cartQuantity={quantity}
+              />
+            );
+          })}
+          {products.length === 0 && !loading && (
             <div className="col-span-2 text-center py-12 text-gray-400 text-sm font-bold">No products found</div>
           )}
         </div>
+        
+        {/* Load More Button */}
+        {hasMore && (
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => setPage(prev => prev + 1)}
+              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-bold"
+            >
+              Load More
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default ProductListingPage;
-

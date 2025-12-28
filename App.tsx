@@ -1,7 +1,9 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { AppTab, Product, CartItem } from './types';
 import { GROUPED_CATEGORIES, PRODUCTS, PRICE_DROP_PRODUCTS } from './constants';
+import { apiService } from './services/api';
+import { mapApiProductsToProducts } from './utils/productMapper';
 
 // Generic Components
 import BottomNav from './components/BottomNav';
@@ -27,6 +29,8 @@ const App: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [address] = useState('Bhavesh, House no 4, canal');
+  const [products, setProducts] = useState<Product[]>(PRODUCTS);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>();
 
   const addToCart = (product: Product) => {
     setCart(prev => {
@@ -47,10 +51,29 @@ const App: React.FC = () => {
   const cartTotal = cart.reduce((acc, curr) => acc + (curr.price * curr.quantity), 0);
   const cartCount = cart.reduce((acc, curr) => acc + curr.quantity, 0);
 
+  // Fetch products on mount or when category changes
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await apiService.getProducts(selectedCategoryId, 1, 50);
+        if (response.success && response.results) {
+          const mappedProducts = mapApiProductsToProducts(response.results);
+          setProducts(mappedProducts);
+        }
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+        // Fallback to static products on error
+        setProducts(PRODUCTS);
+      }
+    };
+
+    fetchProducts();
+  }, [selectedCategoryId]);
+
   const filteredProducts = useMemo(() => {
-    if (!searchQuery) return PRODUCTS;
-    return PRODUCTS.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
-  }, [searchQuery]);
+    if (!searchQuery) return products;
+    return products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [searchQuery, products]);
 
   const handleTabChange = (tab: AppTab) => {
     setActiveTab(tab);
@@ -93,18 +116,36 @@ const App: React.FC = () => {
         {activeTab === AppTab.HOME && (
           <div className="pb-32 px-3">
             <CrazyDealSection />
-            <PriceDropSection products={PRICE_DROP_PRODUCTS} onAdd={addToCart} onViewAll={() => setActiveTab(AppTab.PRODUCTS)} />
-            <FrequentlyBoughtSection products={PRODUCTS} onAdd={addToCart} />
+            <PriceDropSection 
+              products={PRICE_DROP_PRODUCTS} 
+              onAdd={addToCart}
+              onRemove={removeFromCart}
+              cartItems={cart.map(item => ({ id: item.id, quantity: item.quantity }))}
+              onViewAll={() => {
+                setSelectedCategoryId(undefined);
+                setActiveTab(AppTab.PRODUCTS);
+              }} 
+            />
+            <FrequentlyBoughtSection 
+              products={products} 
+              onAdd={addToCart}
+              onRemove={removeFromCart}
+              cartItems={cart.map(item => ({ id: item.id, quantity: item.quantity }))}
+            />
           </div>
         )}
 
         {activeTab === AppTab.CATEGORIES && (
           <div className="pb-32 px-4 pt-6 bg-white">
             <BrowseCategoriesSection 
-              groups={GROUPED_CATEGORIES} 
-              onCategoryClick={(name) => {
-                setSearchQuery(name);
-                setActiveTab(AppTab.SEARCH);
+              onCategoryClick={(name, catId) => {
+                if (catId) {
+                  setSelectedCategoryId(catId);
+                  setActiveTab(AppTab.PRODUCTS);
+                } else {
+                  setSearchQuery(name);
+                  setActiveTab(AppTab.SEARCH);
+                }
               }} 
             />
           </div>
@@ -142,9 +183,11 @@ const App: React.FC = () => {
 
         {activeTab === AppTab.PRODUCTS && (
           <ProductListingPage 
-            products={[...PRICE_DROP_PRODUCTS, ...PRODUCTS]} 
             onAdd={addToCart}
-            title="Blockbuster Deals"
+            onRemove={removeFromCart}
+            cartItems={cart.map(item => ({ id: item.id, quantity: item.quantity }))}
+            title={selectedCategoryId ? "Products" : "Blockbuster Deals"}
+            categoryId={selectedCategoryId}
           />
         )}
 
