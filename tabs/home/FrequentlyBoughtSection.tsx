@@ -6,10 +6,11 @@ interface FrequentlyBoughtSectionProps {
   products: Product[];
   onAdd: (product: Product) => void;
   onRemove?: (productId: string) => void;
+  onProductClick?: (productId: string) => void;
   cartItems?: Array<{ id: string; quantity: number }>;
 }
 
-const FrequentlyBoughtSection: React.FC<FrequentlyBoughtSectionProps> = ({ products, onAdd, onRemove, cartItems = [] }) => {
+const FrequentlyBoughtSection: React.FC<FrequentlyBoughtSectionProps> = ({ products, onAdd, onRemove, onProductClick, cartItems = [] }) => {
   return (
     <div>
       <h3 className="text-[14px] font-black text-gray-900 mb-3 uppercase tracking-tighter">Frequently bought</h3>
@@ -23,6 +24,7 @@ const FrequentlyBoughtSection: React.FC<FrequentlyBoughtSectionProps> = ({ produ
               product={product} 
               onAdd={onAdd}
               onRemove={onRemove}
+              onProductClick={onProductClick}
               cartQuantity={quantity}
               compact 
             />

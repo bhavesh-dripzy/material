@@ -16,17 +16,22 @@ const ProductListingCard = ({
   product, 
   onAdd, 
   onRemove,
+  onProductClick,
   cartQuantity = 0 
 }: { 
   product: Product; 
   onAdd: (p: Product) => void;
   onRemove?: (productId: string) => void;
+  onProductClick?: (productId: string) => void;
   cartQuantity?: number;
 }) => {
   return (
     <div className="flex flex-col group">
       {/* Image Container */}
-      <div className="relative aspect-[4/5] bg-white rounded-xl border border-gray-100/50 shadow-sm overflow-visible mb-2">
+      <div 
+        className="relative aspect-[4/5] bg-white rounded-xl border border-gray-100/50 shadow-sm overflow-visible mb-2 cursor-pointer"
+        onClick={() => onProductClick && onProductClick(product.id)}
+      >
         <img src={product.image} alt={product.name} className="w-full h-full object-cover rounded-xl" />
         
         {/* Heart Icon */}
@@ -78,7 +83,12 @@ const ProductListingCard = ({
         <span className="text-[8px] font-bold text-gray-500 bg-gray-100 px-1 rounded">{product.unit || 'Unit'}</span>
       </div>
 
-      <h4 className="text-[10px] font-bold text-[#3f200d] leading-tight line-clamp-2 h-6 mb-0.5 uppercase tracking-tighter">{product.name}</h4>
+      <h4 
+        className="text-[10px] font-bold text-[#3f200d] leading-tight line-clamp-2 h-6 mb-0.5 uppercase tracking-tighter cursor-pointer hover:text-green-700 transition-colors"
+        onClick={() => onProductClick && onProductClick(product.id)}
+      >
+        {product.name}
+      </h4>
       
       {/* Rating */}
       {product.rating && (
@@ -123,6 +133,7 @@ const ProductListingPage: React.FC<ProductListingPageProps> = ({
   products: staticProducts, 
   onAdd,
   onRemove,
+  onProductClick,
   cartItems = [],
   title = "All Products",
   categoryId 
@@ -212,6 +223,7 @@ const ProductListingPage: React.FC<ProductListingPageProps> = ({
                 product={product} 
                 onAdd={onAdd}
                 onRemove={onRemove}
+                onProductClick={onProductClick}
                 cartQuantity={quantity}
               />
             );

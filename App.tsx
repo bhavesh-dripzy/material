@@ -23,6 +23,7 @@ import BrowseCategoriesSection from './tabs/categories/BrowseCategoriesSection';
 // Products Tab Components
 import ProductListingHeader from './tabs/products/Header';
 import ProductListingPage from './tabs/products/ProductListingPage';
+import ProductDetailPage from './tabs/products/ProductDetailPage';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AppTab>(AppTab.HOME);
@@ -31,6 +32,7 @@ const App: React.FC = () => {
   const [address] = useState('Bhavesh, House no 4, canal');
   const [products, setProducts] = useState<Product[]>(PRODUCTS);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | undefined>();
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
   const addToCart = (product: Product) => {
     setCart(prev => {
@@ -78,6 +80,7 @@ const App: React.FC = () => {
   const handleTabChange = (tab: AppTab) => {
     setActiveTab(tab);
     if (tab !== AppTab.SEARCH) setSearchQuery('');
+    if (tab !== AppTab.PRODUCT_DETAIL) setSelectedProductId(null);
   };
 
   return (
@@ -100,6 +103,8 @@ const App: React.FC = () => {
           onSearchClick={() => setActiveTab(AppTab.SEARCH)}
           onFavoriteClick={() => {}}
         />
+      ) : activeTab === AppTab.PRODUCT_DETAIL ? (
+        <div></div> // Header is handled inside ProductDetailPage
       ) : (
         <HomeHeader 
           address={address} 
@@ -120,6 +125,10 @@ const App: React.FC = () => {
               products={PRICE_DROP_PRODUCTS} 
               onAdd={addToCart}
               onRemove={removeFromCart}
+              onProductClick={(productId) => {
+                setSelectedProductId(productId);
+                setActiveTab(AppTab.PRODUCT_DETAIL);
+              }}
               cartItems={cart.map(item => ({ id: item.id, quantity: item.quantity }))}
               onViewAll={() => {
                 setSelectedCategoryId(undefined);
@@ -130,6 +139,10 @@ const App: React.FC = () => {
               products={products} 
               onAdd={addToCart}
               onRemove={removeFromCart}
+              onProductClick={(productId) => {
+                setSelectedProductId(productId);
+                setActiveTab(AppTab.PRODUCT_DETAIL);
+              }}
               cartItems={cart.map(item => ({ id: item.id, quantity: item.quantity }))}
             />
           </div>
@@ -172,7 +185,17 @@ const App: React.FC = () => {
              </div>
              <div className="grid grid-cols-2 gap-3">
                {filteredProducts.map(p => (
-                 <ProductCard key={p.id} product={p} onAdd={addToCart} />
+                 <ProductCard 
+                   key={p.id} 
+                   product={p} 
+                   onAdd={addToCart}
+                   onRemove={removeFromCart}
+                   onProductClick={(productId) => {
+                     setSelectedProductId(productId);
+                     setActiveTab(AppTab.PRODUCT_DETAIL);
+                   }}
+                   cartQuantity={cart.find(item => item.id === p.id)?.quantity || 0}
+                 />
                ))}
                {filteredProducts.length === 0 && (
                  <div className="col-span-2 text-center py-12 text-gray-400 text-sm font-bold">No materials found for "{searchQuery}"</div>
@@ -185,9 +208,23 @@ const App: React.FC = () => {
           <ProductListingPage 
             onAdd={addToCart}
             onRemove={removeFromCart}
+            onProductClick={(productId) => {
+              setSelectedProductId(productId);
+              setActiveTab(AppTab.PRODUCT_DETAIL);
+            }}
             cartItems={cart.map(item => ({ id: item.id, quantity: item.quantity }))}
             title={selectedCategoryId ? "Products" : "Blockbuster Deals"}
             categoryId={selectedCategoryId}
+          />
+        )}
+
+        {activeTab === AppTab.PRODUCT_DETAIL && selectedProductId && (
+          <ProductDetailPage
+            productId={selectedProductId}
+            onAdd={addToCart}
+            onRemove={removeFromCart}
+            cartQuantity={cart.find(item => item.id === selectedProductId)?.quantity || 0}
+            onBack={() => setActiveTab(AppTab.PRODUCTS)}
           />
         )}
 

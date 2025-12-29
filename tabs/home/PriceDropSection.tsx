@@ -5,6 +5,7 @@ interface PriceDropSectionProps {
   products: Product[];
   onAdd: (product: Product) => void;
   onRemove?: (productId: string) => void;
+  onProductClick?: (productId: string) => void;
   cartItems?: Array<{ id: string; quantity: number }>;
   onViewAll?: () => void;
 }
@@ -13,17 +14,22 @@ const PriceDropCard = ({
   product, 
   onAdd, 
   onRemove,
+  onProductClick,
   cartQuantity = 0 
 }: { 
   product: Product; 
   onAdd: (p: Product) => void;
   onRemove?: (productId: string) => void;
+  onProductClick?: (productId: string) => void;
   cartQuantity?: number;
 }) => {
   return (
     <div className="w-[130px] shrink-0 flex flex-col group">
       {/* Image Container */}
-      <div className="relative aspect-[4/5] bg-white rounded-xl border border-gray-100/50 shadow-sm overflow-visible mb-2">
+      <div 
+        className="relative aspect-[4/5] bg-white rounded-xl border border-gray-100/50 shadow-sm overflow-visible mb-2 cursor-pointer"
+        onClick={() => onProductClick && onProductClick(product.id)}
+      >
         <img src={product.image} alt={product.name} className="w-full h-full object-cover rounded-xl" />
         
         {/* Heart Icon */}
@@ -75,7 +81,12 @@ const PriceDropCard = ({
         <span className="text-[8px] font-bold text-gray-500 bg-gray-100 px-1 rounded">{product.unit}</span>
       </div>
 
-      <h4 className="text-[10px] font-bold text-[#3f200d] leading-tight line-clamp-2 h-6 mb-0.5 uppercase tracking-tighter">{product.name}</h4>
+      <h4 
+        className="text-[10px] font-bold text-[#3f200d] leading-tight line-clamp-2 h-6 mb-0.5 uppercase tracking-tighter cursor-pointer hover:text-green-700 transition-colors"
+        onClick={() => onProductClick && onProductClick(product.id)}
+      >
+        {product.name}
+      </h4>
       
       {/* Rating */}
       <div className="flex items-center gap-1 mb-0.5">
@@ -106,7 +117,7 @@ const PriceDropCard = ({
   );
 };
 
-const PriceDropSection: React.FC<PriceDropSectionProps> = ({ products, onAdd, onRemove, cartItems = [], onViewAll }) => {
+const PriceDropSection: React.FC<PriceDropSectionProps> = ({ products, onAdd, onRemove, onProductClick, cartItems = [], onViewAll }) => {
   return (
     <div className="relative bg-[#fdf0e1] -mx-3 px-3 pt-0 pb-6 mb-6 overflow-hidden">
       {/* Background Pattern and Lightning Bolt */}
@@ -126,13 +137,14 @@ const PriceDropSection: React.FC<PriceDropSectionProps> = ({ products, onAdd, on
             const cartItem = cartItems.find(item => item.id === product.id);
             const quantity = cartItem?.quantity || 0;
             return (
-              <PriceDropCard 
-                key={product.id} 
-                product={product} 
-                onAdd={onAdd}
-                onRemove={onRemove}
-                cartQuantity={quantity}
-              />
+            <PriceDropCard 
+              key={product.id} 
+              product={product} 
+              onAdd={onAdd}
+              onRemove={onRemove}
+              onProductClick={onProductClick}
+              cartQuantity={quantity}
+            />
             );
           })}
         </div>

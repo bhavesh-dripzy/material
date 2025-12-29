@@ -9,11 +9,21 @@ interface ProductCardProps {
   compact?: boolean;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd, onRemove, cartQuantity = 0, compact }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd, onRemove, onProductClick, cartQuantity = 0, compact }) => {
   return (
     <div className={`${compact ? 'w-28 shrink-0' : 'h-full'} bg-white border border-gray-100 rounded-xl p-2.5 shadow-sm flex flex-col`}>
-      <img src={product.image} className={`w-full ${compact ? 'h-20' : 'h-24'} object-cover rounded-lg mb-1.5`} alt={product.name} />
-      <h4 className="text-[10px] font-bold text-gray-800 line-clamp-2 h-6 leading-tight mb-0.5 uppercase tracking-tighter">{product.name}</h4>
+      <img 
+        src={product.image} 
+        className={`w-full ${compact ? 'h-20' : 'h-24'} object-cover rounded-lg mb-1.5 cursor-pointer hover:opacity-90 transition-opacity`} 
+        alt={product.name}
+        onClick={() => onProductClick && onProductClick(product.id)}
+      />
+      <h4 
+        className="text-[10px] font-bold text-gray-800 line-clamp-2 h-6 leading-tight mb-0.5 uppercase tracking-tighter cursor-pointer hover:text-green-700 transition-colors"
+        onClick={() => onProductClick && onProductClick(product.id)}
+      >
+        {product.name}
+      </h4>
       <div className="text-[8px] text-gray-400 mb-1.5">{product.unit}</div>
       <div className="flex items-center justify-between mt-auto">
         <span className="text-[11px] font-black text-gray-900">₹{product.price}</span>
